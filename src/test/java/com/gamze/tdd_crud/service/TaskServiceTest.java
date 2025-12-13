@@ -76,7 +76,7 @@ public class TaskServiceTest {
         given(taskRepository.findById(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> taskService.getTaskById(1L))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Task not found with id: 1");
     }
 
@@ -114,7 +114,7 @@ public class TaskServiceTest {
         given(taskRepository.findById(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> taskService.updateTask(1L, updatedTask))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Task not found with id: 1");
     }
 
@@ -150,7 +150,7 @@ public class TaskServiceTest {
         given(taskRepository.findById(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> taskService.deleteTask(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Task not found with id: 1");
     }
 }

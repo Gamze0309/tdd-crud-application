@@ -23,7 +23,7 @@ public class TaskService {
 
     public Task getTaskById(Long id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Task not found with id: " + id));
     }
 
     public Task updateTask(Long id, Task updatedTask) {
