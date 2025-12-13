@@ -39,4 +39,15 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("New Task"));
     }
+
+    @Test
+    void shouldReturn400WhenTitleIsNull() throws Exception {
+        given(taskService.createTask(any(Task.class)))
+                .willThrow(new IllegalArgumentException("Task title cannot be null or empty"));
+
+        mockMvc.perform(post("/api/tasks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":null}"))
+                .andExpect(status().isBadRequest());
+    }
 }
