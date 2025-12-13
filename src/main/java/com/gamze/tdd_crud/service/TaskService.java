@@ -27,10 +27,16 @@ public class TaskService {
     }
 
     public Task updateTask(Long id, Task updatedTask) {
+        if (updatedTask.getTitle() == null || updatedTask.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Task title cannot be null or empty");
+        }
+        
         Task existingTask = getTaskById(id);
 
         existingTask.setTitle(updatedTask.getTitle());
         existingTask.setDescription(updatedTask.getDescription());
+        existingTask.setDueDate(updatedTask.getDueDate());
+        existingTask.setCompleted(updatedTask.isCompleted());
 
         return taskRepository.save(existingTask);
     }

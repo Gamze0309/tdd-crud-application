@@ -84,10 +84,14 @@ public class TaskServiceTest {
         existingTask.setId(1L);
         existingTask.setTitle("Old Title");
         existingTask.setDescription("Old Description");
+        existingTask.setDueDate("2024-12-14");
+        existingTask.setCompleted(true);
 
         Task updatedTask = new Task();
         updatedTask.setTitle("New Title");
         updatedTask.setDescription("New Description");
+        updatedTask.setDueDate("2024-12-20");
+        updatedTask.setCompleted(true);
 
         given(taskRepository.findById(1L)).willReturn(Optional.of(existingTask));
         given(taskRepository.save(any(Task.class))).willReturn(existingTask);
@@ -97,6 +101,32 @@ public class TaskServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("New Title");
         assertThat(result.getDescription()).isEqualTo("New Description");
-        assertThat(result.isCompleted()).isFalse();
+        assertThat(result.isCompleted()).isTrue();
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingNonExistentTask() {
+        Task updatedTask = new Task();
+        updatedTask.setTitle("New Title");
+
+        given(taskRepository.findById(1L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> taskService.updateTask(1L, updatedTask))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Task not found with id: 1");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingWithNullTitle() {
+        Task existingTask = new Task();
+        existingTask.setId(1L);
+        existingTask.setTitle("Old Title");
+
+        Task updatedTask = new Task();
+        updatedTask.setTitle(null);
+
+        assertThatThrownBy(() -> taskService.updateTask(1L, updatedTask))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Task title cannot be null or empty");
     }
 }
