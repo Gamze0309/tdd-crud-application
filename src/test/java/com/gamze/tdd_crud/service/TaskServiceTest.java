@@ -42,6 +42,7 @@ public class TaskServiceTest {
         assertThat(savedTask.getDescription()).isEqualTo("Complete the TDD CRUD application by end of the week");
         assertThat(savedTask.getDueDate()).isEqualTo("2024-12-14");
         assertThat(savedTask.isCompleted()).isFalse();
+        assertThat(savedTask.getCreatedAt()).isNotNull();
     }
 
     @Test
