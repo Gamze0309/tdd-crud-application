@@ -14,10 +14,7 @@ public class TaskService {
     }
 
     public Task createTask(Task task) {
-        if (task.getTitle() == null || task.getTitle().trim().isEmpty()) {
-            throw new IllegalArgumentException("Task title cannot be null or empty");
-        }
-
+        validateTitle(task.getTitle());
         return taskRepository.save(task);
     }
 
@@ -27,10 +24,7 @@ public class TaskService {
     }
 
     public Task updateTask(Long id, Task updatedTask) {
-        if (updatedTask.getTitle() == null || updatedTask.getTitle().trim().isEmpty()) {
-            throw new IllegalArgumentException("Task title cannot be null or empty");
-        }
-        
+        validateTitle(updatedTask.getTitle());
         Task existingTask = getTaskById(id);
 
         existingTask.setTitle(updatedTask.getTitle());
@@ -44,5 +38,11 @@ public class TaskService {
     public void deleteTask(Long id) {
         Task existingTask = getTaskById(id);
         taskRepository.delete(existingTask);
+    }
+
+    private void validateTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Task title cannot be null or empty");
+        }
     }
 }
