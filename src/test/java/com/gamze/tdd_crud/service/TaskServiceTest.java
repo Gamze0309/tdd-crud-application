@@ -1,6 +1,7 @@
 package com.gamze.tdd_crud.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given; 
 
@@ -39,5 +40,15 @@ public class TaskServiceTest {
         assertThat(savedTask.getDescription()).isEqualTo("Complete the TDD CRUD application by end of the week");
         assertThat(savedTask.getDueDate()).isEqualTo("2024-12-14");
         assertThat(savedTask.isCompleted()).isFalse();
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTitleIsNull() {
+        Task task = new Task();
+        task.setTitle(null);
+        
+        assertThatThrownBy(() -> taskService.createTask(task))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Task title cannot be null or empty");
     }
 }
