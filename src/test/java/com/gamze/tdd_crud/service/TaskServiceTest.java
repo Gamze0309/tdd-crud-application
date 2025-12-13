@@ -77,4 +77,26 @@ public class TaskServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("Task not found with id: 1");
     }
+
+    @Test
+    void shouldUpdateTaskSuccessfully() {
+        Task existingTask = new Task();
+        existingTask.setId(1L);
+        existingTask.setTitle("Old Title");
+        existingTask.setDescription("Old Description");
+
+        Task updatedTask = new Task();
+        updatedTask.setTitle("New Title");
+        updatedTask.setDescription("New Description");
+
+        given(taskRepository.findById(1L)).willReturn(Optional.of(existingTask));
+        given(taskRepository.save(any(Task.class))).willReturn(existingTask);
+
+        Task result = taskService.updateTask(1L, updatedTask);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTitle()).isEqualTo("New Title");
+        assertThat(result.getDescription()).isEqualTo("New Description");
+        assertThat(result.isCompleted()).isFalse();
+    }
 }
