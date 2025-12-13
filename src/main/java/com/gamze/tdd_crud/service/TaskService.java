@@ -17,7 +17,12 @@ public class TaskService {
         if (task.getTitle() == null || task.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("Task title cannot be null or empty");
         }
-        
+
         return taskRepository.save(task);
+    }
+
+    public Task getTaskById(Long id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Task not found with id: " + id));
     }
 }

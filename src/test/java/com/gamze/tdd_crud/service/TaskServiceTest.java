@@ -3,7 +3,9 @@ package com.gamze.tdd_crud.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given; 
+import static org.mockito.BDDMockito.given;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,9 +48,32 @@ public class TaskServiceTest {
     void shouldThrowExceptionWhenTitleIsNull() {
         Task task = new Task();
         task.setTitle(null);
-        
+
         assertThatThrownBy(() -> taskService.createTask(task))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("Task title cannot be null or empty");
+    }
+
+    @Test 
+    void shouldReadTaskSuccessfully() {
+        Task task = new Task();
+        task.setId(1L);
+        task.setTitle("Read the book");
+
+        given(taskRepository.findById(1L)).willReturn(Optional.of(task));
+
+        Task foundTask = taskService.getTaskById(1L);
+        assertThat(foundTask).isNotNull();
+        assertThat(foundTask.getId()).isEqualTo(1L);
+        assertThat(foundTask.getTitle()).isEqualTo("Read the book");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTaskNotFound() {
+        given(taskRepository.findById(1L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> taskService.getTaskById(1L))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Task not found with id: 1");
     }
 }
