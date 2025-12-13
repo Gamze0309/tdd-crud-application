@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
 
@@ -128,5 +130,27 @@ public class TaskServiceTest {
         assertThatThrownBy(() -> taskService.updateTask(1L, updatedTask))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Task title cannot be null or empty");
+    }
+
+    @Test
+    void shouldDeleteTaskSuccessfully() {
+        Task task = new Task();
+        task.setId(1L);
+        task.setTitle("Finish the project");
+
+        given(taskRepository.findById(1L)).willReturn(Optional.of(task));
+        
+        taskService.deleteTask(1L);
+
+        verify(taskRepository, times(1)).delete(task);
+    } 
+
+    @Test
+    void shouldThrowExceptionWhenDeletingNonExistentTask() {
+        given(taskRepository.findById(1L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> taskService.deleteTask(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Task not found with id: 1");
     }
 }
