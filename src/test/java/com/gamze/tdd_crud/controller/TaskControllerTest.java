@@ -2,6 +2,7 @@ package com.gamze.tdd_crud.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -103,6 +105,33 @@ public class TaskControllerTest {
         mockMvc.perform(put("/api/tasks/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"title\":\"Updated Task\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn400WhenUpdatingWithNullTitle() throws Exception {
+        given(taskService.updateTask(any(Long.class), any(Task.class)))
+                .willThrow(new IllegalArgumentException("Task title cannot be null or empty"));
+
+        mockMvc.perform(put("/api/tasks/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":null}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldDeleteTask() throws Exception {
+        mockMvc.perform(delete("/api/tasks/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldReturn404WhenDeletingNonExistentTask() throws Exception {
+        doThrow(new RuntimeException("Task not found with id: 1"))
+            .when(taskService).deleteTask(1L);
+
+        mockMvc.perform(delete("/api/tasks/1"))
                 .andExpect(status().isNotFound());
     }
 }
