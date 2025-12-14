@@ -94,4 +94,15 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Updated Task"));
     }
+
+    @Test
+    void shouldReturn404WhenUpdatingNonExistentTask() throws Exception {
+        given(taskService.updateTask(any(Long.class), any(Task.class)))
+                .willThrow(new RuntimeException("Task not found with id: 1"));
+
+        mockMvc.perform(put("/api/tasks/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Updated Task\"}"))
+                .andExpect(status().isNotFound());
+    }
 }
